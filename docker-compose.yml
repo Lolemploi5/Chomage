@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: chomage_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./Chomage_DB.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+
+  fastapi:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=chomage_db
+
+  php:
+    image: php:8.0-apache
+    volumes:
+      - ./web:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - fastapi
+
+volumes:
+  mysql_data:
