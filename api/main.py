@@ -38,8 +38,8 @@ class Departement(BaseModel):
     trimestre_3: Optional[float] = None
 
 class Region(BaseModel):
-    code_departement: str
-    nom_departement: Optional[str] = None
+    code_region: str  # Corrigé : code_region au lieu de code_departement
+    nom_region: Optional[str] = None  # Corrigé : nom_region au lieu de nom_departement
     trimestre_1: Optional[float] = None
     trimestre_2: Optional[float] = None
     trimestre_3: Optional[float] = None
@@ -106,7 +106,17 @@ def get_regions():
     
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM regions ORDER BY code_departement")
+        # Requête avec alias si nécessaire pour correspondre au modèle de réponse
+        cursor.execute("""
+            SELECT 
+                code_departement as code_region, 
+                nom_departement as nom_region, 
+                trimestre_1, 
+                trimestre_2, 
+                trimestre_3 
+            FROM regions 
+            ORDER BY code_departement
+        """)
         regions = cursor.fetchall()
         return regions
     except Error as e:
@@ -124,7 +134,17 @@ def get_region(code: str):
     
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM regions WHERE code_departement = %s", (code,))
+        # Requête avec alias pour correspondre au modèle de réponse
+        cursor.execute("""
+            SELECT 
+                code_departement as code_region, 
+                nom_departement as nom_region, 
+                trimestre_1, 
+                trimestre_2, 
+                trimestre_3 
+            FROM regions 
+            WHERE code_departement = %s
+        """, (code,))
         region = cursor.fetchone()
         
         if not region:
