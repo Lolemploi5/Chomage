@@ -42,8 +42,10 @@ if (!isset($departements["error"])) {
 $regionData = [];
 if (!isset($regions["error"])) {
     foreach ($regions as $region) {
-        $regionData[$region["code_departement"]] = [
-            "nom" => $region["nom_departement"],
+        // Assurez-vous que les clés existent dans vos données API
+        // Si vos données de région ont une structure différente, adaptez ces clés
+        $regionData[$region["code_region"]] = [
+            "nom" => $region["nom_region"],
             "taux" => [
                 "t1" => $region["trimestre_1"], 
                 "t2" => $region["trimestre_2"], 
@@ -58,6 +60,9 @@ $selectedTrimestre = isset($_GET['trimestre']) ? $_GET['trimestre'] : 3;
 
 // Déterminer le mode d'affichage (département ou région)
 $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
+
+// Titre dynamique selon le mode d'affichage
+$pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de chômage par département';
 ?>
 
 <!DOCTYPE html>
@@ -65,341 +70,13 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte du chômage en France</title>
+    <title>Carte du chômage en France - <?php echo $pageTitle; ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --light-bg: #f8f9fa;
-            --dark-bg: #343a40;
-            --text-color: #333;
-            --light-text: #f8f9fa;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-bg);
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text);
-            padding: 1.5rem;
-            box-shadow: var(--box-shadow);
-            position: relative;
-        }
-        
-        header h1 {
-            margin-bottom: 1rem;
-            font-weight: 500;
-            font-size: 1.8rem;
-            text-align: center;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .control-group {
-            display: flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
-        }
-        
-        select, button {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: var(--border-radius);
-            background-color: white;
-            color: var(--secondary-color);
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.9rem;
-        }
-        
-        select:hover, button:hover {
-            background-color: var(--light-bg);
-        }
-        
-        label {
-            margin-right: 0.5rem;
-            font-weight: 500;
-        }
-        
-        main {
-            padding: 2rem;
-        }
-        
-        .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        @media (min-width: 992px) {
-            .container {
-                grid-template-columns: 3fr 2fr;
-            }
-        }
-        
-        .map-container {
-            position: relative;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            background-color: white;
-            height: 70vh;
-        }
-        
-        #map {
-            height: 100%;
-            z-index: 1;
-        }
-        
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            z-index: 2;
-            max-width: 200px;
-        }
-        
-        .legend h3 {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.3rem;
-            font-size: 0.8rem;
-        }
-        
-        .color-box {
-            width: 16px;
-            height: 16px;
-            margin-right: 8px;
-            border-radius: 3px;
-        }
-        
-        .info-panel {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            height: 70vh;
-            overflow: hidden;
-        }
-        
-        .info-panel h2 {
-            margin-bottom: 1rem;
-            color: var(--secondary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-        }
-        
-        #info-content {
-            margin-bottom: 1.5rem;
-            overflow-y: auto;
-            flex: 0 0 auto;
-        }
-        
-        #info-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        #info-content p {
-            color: var(--text-color);
-            margin-bottom: 1rem;
-        }
-        
-        #info-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-        
-        #info-content th, #info-content td {
-            border: 1px solid #ddd;
-            padding: 0.5rem;
-            text-align: left;
-        }
-        
-        #info-content th {
-            background-color: var(--light-bg);
-        }
-        
-        .chart-container {
-            flex: 1;
-            position: relative;
-            min-height: 250px;
-            margin-top: 1rem;
-        }
-        
-        .no-data {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            color: #999;
-            font-style: italic;
-        }
-        
-        footer {
-            background-color: var(--dark-bg);
-            color: var(--light-text);
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .view-toggle {
-            display: flex;
-            background-color: var(--light-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            margin-left: 1rem;
-        }
-        
-        .view-toggle button {
-            padding: 0.5rem 1rem;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .view-toggle button.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .loading-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            display: none;
-            z-index: 1000;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .data-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-        }
-        
-        .data-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-label {
-            font-weight: 500;
-        }
-        
-        .stat-value {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .trend {
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .trend.up {
-            color: #e74c3c;
-        }
-        
-        .trend.down {
-            color: #2ecc71;
-        }
-        
-        .trend.stable {
-            color: #f39c12;
-        }
-        
-        .trend i {
-            margin-right: 0.3rem;
-        }
-        
-        .tooltip {
-            position: absolute;
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 0.5rem;
-            box-shadow: var(--box-shadow);
-            font-size: 0.9rem;
-            z-index: 1000;
-            max-width: 250px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
@@ -500,9 +177,28 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                     
                     // Recharger la carte
                     loadGeoJSON();
+                    
+                    // Réinitialiser l'info-panel
+                    resetInfoPanel();
                 });
             });
         });
+        
+        // Réinitialiser le panneau d'information
+        function resetInfoPanel() {
+            const infoContent = document.getElementById('info-content');
+            infoContent.innerHTML = `
+                <div class="no-data">
+                    <p>Cliquez sur ${viewMode === 'regions' ? 'une région' : 'un département'} pour voir les détails</p>
+                </div>
+            `;
+            
+            // Effacer le graphique s'il existe
+            if (evolutionChart) {
+                evolutionChart.destroy();
+                evolutionChart = null;
+            }
+        }
         
         // Initialiser la carte
         function initMap() {
@@ -537,6 +233,9 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                 map.removeLayer(geoJsonLayer);
             }
             
+            // Réinitialiser la zone sélectionnée
+            selectedArea = null;
+            
             // Déterminer le fichier à charger
             const geoJsonFile = viewMode === 'regions' ? 'data/regions.geojson' : 'data/departements.geojson';
             
@@ -548,8 +247,21 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                     document.querySelector('.loading-indicator').style.display = 'none';
                 })
                 .catch(error => {
-                    console.error("Erreur lors du chargement des données GeoJSON:", error);
+                    console.error(`Erreur lors du chargement des données GeoJSON (${viewMode}):`, error);
                     document.querySelector('.loading-indicator').style.display = 'none';
+                    
+                    // Afficher un message d'erreur dans la carte
+                    const mapContainer = document.querySelector('.map-container');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.innerHTML = `
+                        <div class="alert">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            Impossible de charger les données géographiques. Veuillez vérifier que le fichier 
+                            ${geoJsonFile} existe et est accessible.
+                        </div>
+                    `;
+                    mapContainer.appendChild(errorMsg);
                 });
         }
         
@@ -557,8 +269,14 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
         function createGeoJsonLayer(data) {
             geoJsonLayer = L.geoJSON(data, {
                 style: function(feature) {
-                    const code = feature.properties.code;
+                    // Identifier la clé à utiliser selon le mode d'affichage
+                    const code = viewMode === 'regions' ? feature.properties.code_region || feature.properties.code : feature.properties.code;
                     const dataSource = viewMode === 'regions' ? regionData : mapData;
+                    
+                    // Debug: afficher les informations dans la console
+                    console.log(`Style pour ${viewMode} code:`, code);
+                    console.log(`Données disponibles:`, dataSource[code]);
+                    
                     const area = dataSource[code];
                     let tauxChomage = 0;
                     
@@ -586,8 +304,12 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                     };
                 },
                 onEachFeature: function(feature, layer) {
-                    const code = feature.properties.code;
+                    // Utiliser le bon code d'identification selon le mode
+                    const code = viewMode === 'regions' ? feature.properties.code_region || feature.properties.code : feature.properties.code;
                     const dataSource = viewMode === 'regions' ? regionData : mapData;
+                    
+                    console.log(`Interaction pour ${viewMode} code:`, code);
+                    
                     const area = dataSource[code];
                     
                     if (area) {
@@ -645,7 +367,7 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                             // Animation pour centrer la carte sur la zone
                             map.fitBounds(layer.getBounds(), {
                                 padding: [50, 50],
-                                maxZoom: 8,
+                                maxZoom: viewMode === 'regions' ? 6 : 8,
                                 animate: true,
                                 duration: 0.5
                             });
@@ -657,9 +379,27 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                             tooltip.style.left = (pos.pageX + 10) + 'px';
                             tooltip.style.top = (pos.pageY + 10) + 'px';
                         });
+                    } else {
+                        console.warn(`Aucune donnée trouvée pour ${viewMode === 'regions' ? 'la région' : 'le département'} ${code}`);
+                        
+                        // Ajouter un événement de clic simple pour montrer qu'il n'y a pas de données
+                        layer.on('click', function() {
+                            const infoContent = document.getElementById('info-content');
+                            infoContent.innerHTML = `
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-circle"></i> 
+                                    Aucune donnée disponible pour ${viewMode === 'regions' ? 'la région' : 'le département'} avec le code "${code}".
+                                </div>
+                            `;
+                        });
                     }
                 }
             }).addTo(map);
+            
+            // Afficher les données disponibles dans la console pour le débogage
+            console.log("Mode de vue:", viewMode);
+            console.log("Données départements:", mapData);
+            console.log("Données régions:", regionData);
         }
         
         // Afficher les informations détaillées d'une zone
@@ -667,7 +407,17 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
             const dataSource = viewMode === 'regions' ? regionData : mapData;
             const area = dataSource[code];
             
-            if (!area) return;
+            if (!area) {
+                // Gérer le cas où les données ne sont pas disponibles
+                const infoContent = document.getElementById('info-content');
+                infoContent.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        Aucune donnée disponible pour ${viewMode === 'regions' ? 'la région' : 'le département'} ${code}.
+                    </div>
+                `;
+                return;
+            }
             
             const infoContent = document.getElementById('info-content');
             
@@ -710,9 +460,12 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                 trendClass2 = 'stable';
             }
             
+            // En-tête adaptée au type de zone (région ou département)
+            const zoneType = viewMode === 'regions' ? 'Région' : 'Département';
+            
             // Créer un contenu plus riche avec des cartes de données
             infoContent.innerHTML = `
-                <h3>${area.nom} (${code})</h3>
+                <h3>${zoneType}: ${area.nom} (${code})</h3>
                 <p>Évolution du taux de chômage sur les trois derniers trimestres</p>
                 
                 <div class="data-card">
@@ -741,19 +494,29 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                         ${trendIcon2} ${trend2} par rapport au T2
                     </div>
                 </div>
+                
+                <div class="info-note" style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                    <i class="fas fa-info-circle"></i> 
+                    Ces données sont basées sur les statistiques officielles 
+                    ${viewMode === 'regions' ? 'régionales' : 'départementales'} du chômage.
+                </div>
             `;
             
             // Mise à jour du graphique
-            updateChart(area);
+            updateChart(area, zoneType);
         }
         
         // Fonction pour mettre à jour le graphique
-        function updateChart(area) {
+        function updateChart(area, zoneType) {
             const ctx = document.getElementById('evolution-chart').getContext('2d');
             
             if (evolutionChart) {
                 evolutionChart.destroy();
             }
+            
+            // Définir différentes couleurs pour les régions et départements
+            const borderColor = viewMode === 'regions' ? '#8e44ad' : '#3498db';
+            const backgroundColor = viewMode === 'regions' ? 'rgba(142, 68, 173, 0.1)' : 'rgba(52, 152, 219, 0.1)';
             
             evolutionChart = new Chart(ctx, {
                 type: 'line',
@@ -762,13 +525,13 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                     datasets: [{
                         label: `Évolution du taux de chômage`,
                         data: [area.taux.t1, area.taux.t2, area.taux.t3],
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderColor: borderColor,
+                        backgroundColor: backgroundColor,
                         borderWidth: 3,
                         tension: 0.2,
                         fill: true,
                         pointBackgroundColor: '#fff',
-                        pointBorderColor: '#3498db',
+                        pointBorderColor: borderColor,
                         pointBorderWidth: 2,
                         pointRadius: 5,
                         pointHoverRadius: 7
@@ -812,7 +575,7 @@ $viewMode = isset($_GET['view']) ? $_GET['view'] : 'departements';
                         },
                         title: {
                             display: true,
-                            text: `${area.nom} - Évolution du chômage`,
+                            text: `${zoneType} ${area.nom} - Évolution du chômage`,
                             font: {
                                 size: 16
                             },
