@@ -558,6 +558,7 @@ footer {
 
 .dark-mode #info-content th {
     background-color: var(--dark-bg);
+    color: var(--text-color);
 }
 
 .dark-mode .tooltip {
@@ -572,6 +573,121 @@ footer {
 
 .dark-mode .view-toggle .page-toggle button.active {
     background-color: var(--primary-color);
+}
+
+.dark-mode .trend.up {
+    color: #ff6b6b;
+}
+
+.dark-mode .trend.down {
+    color: #5cff9d;
+}
+
+.dark-mode .trend.stable {
+    color: #ffc04d;
+}
+
+.dark-mode .stat-value {
+    color: #5ccdff;
+}
+
+.dark-mode .info-note {
+    color: #aaaaaa !important;
+}
+
+.dark-mode .legend-item .color-box {
+    border: 1px solid #aaaaaa;
+}
+
+.dark-mode .no-data {
+    color: #aaaaaa;
+}
+
+.dark-mode .loading-indicator {
+    background-color: rgba(26, 37, 48, 0.8);
+    color: var(--text-color);
+}
+
+.dark-mode .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--primary-color);
+}
+
+.dark-mode .alert {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: var(--text-color);
+}
+
+.dark-mode .alert.alert-warning {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: var(--text-color);
+}
+
+.dark-mode .action-buttons button:hover {
+    background-color: #1d6fa5;
+}
+
+.dark-mode #info-content th, .dark-mode #info-content td {
+    border-color: #3a4a5e;
+    color: var(--text-color);
+}
+
+.dark-mode #info-content {
+    scrollbar-color: var(--primary-color) var(--secondary-color);
+}
+
+.dark-mode #info-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dark-mode #info-content::-webkit-scrollbar-track {
+    background: var(--secondary-color);
+}
+
+.dark-mode #info-content::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 4px;
+}
+
+.dark-mode .control-group {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+}
+
+.dark-mode .legend {
+    background-color: rgba(26, 37, 48, 0.9);
+    color: var(--text-color);
+}
+
+.dark-mode .topbar {
+    background: linear-gradient(90deg, #003366, #0056b3);
+    color: var(--text-color);
+}
+
+.dark-mode .topbar p {
+    color: var(--text-color);
+}
+
+.dark-mode #timer {
+    color: var(--text-color);
+}
+
+.dark-mode .info-panel {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.dark-mode .info-panel h2 {
+    color: var(--light-text);
+}
+
+.dark-mode #info-content {
+    color: var(--text-color);
+}
+
+.dark-mode #info-content th, .dark-mode #info-content td {
+    color: var(--text-color);
+    border-color: #3a4a5e;
 }
 
 /* Amélioration des tendances en mode sombre */
@@ -846,4 +962,63 @@ footer {
     .container {
         padding: 0 0.5rem;
     }
+}
+
+/* Styles pour l'image capturée */
+.capture-style {
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.capture-style h2 {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.capture-style .chart-container {
+    margin-top: 20px;
+}
+
+.capture-style .action-buttons {
+    display: none; /* Masquer les boutons dans l'image capturée */
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #0056b3, #007bff);
+    color: white;
+    padding: 0.3rem 1rem;
+    font-size: 0.8rem;
+    border-bottom: 2px solid #004494;
+}
+
+.topbar div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.topbar p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.topbar strong {
+    font-weight: 700;
+    color: #ffdd57;
+}
+
+#timer {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #ffffff;
 }
