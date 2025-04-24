@@ -80,6 +80,8 @@ $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/share.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <header>
@@ -224,7 +226,7 @@ $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de
                 <button id="export-csv" title="Exporter en CSV">
                     <i class="fas fa-file-csv"></i> Exporter
                 </button>
-                <button id="share-data" title="Partager">
+                <button id="share-data" title="Partager" onclick="captureAndShare()">
                     <i class="fas fa-share-alt"></i> Partager
                 </button>
             `;
@@ -232,7 +234,6 @@ $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de
             
             // Configurer les boutons d'action
             document.getElementById('export-csv').addEventListener('click', exportDataAsCSV);
-            document.getElementById('share-data').addEventListener('click', shareData);
         });
         
         // Recherche de départements ou régions
