@@ -33,6 +33,39 @@ select {
     border-radius: 4px;
     border: 1px solid #ddd;
 }
+/* Button pour switch page */
+.page-toggle {
+    display: inline-flex; /* Empêche d’occuper toute la largeur */
+    background-color: var(--light-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin: 0rem auto; /* ✅ Centre horizontalement */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Optionnel pour un petit relief */
+    justify-content: center; /* ✅ Assure que les boutons sont bien centrés à l’intérieur */
+}
+
+.page-toggle button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    text-align: center;
+}
+
+.page-toggle button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+.page-toggle button:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--primary-color);
+}
+
 
 /* Conteneur principal */
 .container {
@@ -537,7 +570,7 @@ footer {
     color: var(--text-color);
 }
 
-.dark-mode .view-toggle button.active {
+.dark-mode .view-toggle .page-toggle button.active {
     background-color: var(--primary-color);
 }
 
