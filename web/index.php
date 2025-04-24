@@ -66,6 +66,24 @@ $darkMode = isset($_COOKIE['darkMode']) && $_COOKIE['darkMode'] === 'true';
 
 // Titre dynamique selon le mode d'affichage
 $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de chômage par département';
+
+// Charger la date de diffusion depuis le fichier
+$dateFilePath = __DIR__ . '/data/last_publication_date.txt';
+$lastPublicationDate = 'Non disponible';
+if (file_exists($dateFilePath)) {
+    $lastPublicationDate = trim(file_get_contents($dateFilePath));
+}
+
+// Charger l'heure du dernier check depuis le fichier
+$lastCheckFilePath = __DIR__ . '/data/last_check_time.txt';
+$lastCheckTime = 'Non disponible';
+$timeRemaining = 600; // 10 minutes en secondes
+if (file_exists($lastCheckFilePath)) {
+    $lastCheckTime = trim(file_get_contents($lastCheckFilePath));
+    $lastCheckTimestamp = strtotime($lastCheckTime);
+    $timeElapsed = time() - $lastCheckTimestamp;
+    $timeRemaining = max(600 - $timeElapsed, 0); // Calculer le temps restant
+}
 ?>
 
 <!DOCTYPE html>
@@ -91,6 +109,15 @@ $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de
                 <button id="theme-switch" title="Changer de thème">
                     <i class="fas <?php echo $darkMode ? 'fa-sun' : 'fa-moon'; ?>"></i>
                 </button>
+            </div>
+        </div>
+        
+        <div class="topbar">
+            <div>
+                <p>Date de diffusion : <strong><?php echo $lastPublicationDate; ?></strong></p>
+            </div>
+            <div>
+                <p>Prochain check dans : <span id="timer">...</span></p>
             </div>
         </div>
         
@@ -140,7 +167,7 @@ $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de
             </div>
 
             <div class="info-panel">
-                <h2><i class="fas fa-info-circle"></i> Informations détaillées</h2>
+                <h2 style="color: #2c3e50;">Informations détaillées</h2>
                 <div id="info-content">
                     <div class="no-data">
                         <p>Cliquez sur un département pour voir les détails</p>
@@ -918,6 +945,23 @@ $pageTitle = $viewMode === 'regions' ? 'Taux de chômage par région' : 'Taux de
                 }
             });
         }
+        
+        // Timer pour le prochain check
+        let timer = <?php echo $timeRemaining; ?>;
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            if (timer > 0) {
+                timer--;
+            } else {
+                timerElement.textContent = "Vérification en cours...";
+            }
+        }
+
+        setInterval(updateTimer, 1000);
     </script>
 </body>
 </html>
