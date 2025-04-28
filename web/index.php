@@ -24,7 +24,7 @@ function callAPI($endpoint)
 $departements = callAPI("/departements");
 $regions = callAPI("/regions");
 
-// Préparer les données pour la carte
+// Préparer les données pour les départements sur la carte
 $mapData = [];
 if (!isset($departements["error"])) {
     foreach ($departements as $dept) {
@@ -43,8 +43,6 @@ if (!isset($departements["error"])) {
 $regionData = [];
 if (!isset($regions["error"])) {
     foreach ($regions as $region) {
-        // Assurez-vous que les clés existent dans vos données API
-        // Si vos données de région ont une structure différente, adaptez ces clés
         $regionData[$region["code_region"]] = [
             "nom" => $region["nom_region"],
             "taux" => [
@@ -273,7 +271,7 @@ if (file_exists($lastCheckFilePath)) {
             document.getElementById('export-csv').addEventListener('click', exportDataAsCSV);
         });
 
-        // Recherche de départements ou régions
+        // Recherche de départements ou régions pour la page index.php
         function performSearch(query) {
             if (!query || query.length < 2) {
                 searchResults = [];
@@ -282,7 +280,7 @@ if (file_exists($lastCheckFilePath)) {
 
             query = query.toLowerCase();
 
-            // Rechercher dans les données actuelles
+            // Rechercher dans les données actuelles (départements ou régions)
             const currentData = viewMode === 'regions' ? regionData : mapData;
             searchResults = [];
 
@@ -318,7 +316,7 @@ if (file_exists($lastCheckFilePath)) {
                     // Simuler un clic sur cette zone
                     layer.fire('click');
 
-                    // Animer un zoom vers cette zone
+                    // Animation du zoom vers cette zone
                     map.fitBounds(layer.getBounds(), {
                         padding: [50, 50],
                         maxZoom: viewMode === 'regions' ? 6 : 8,
@@ -378,7 +376,7 @@ if (file_exists($lastCheckFilePath)) {
             }
         }
 
-        // Mettre à jour le thème du graphique
+        // Mettre à jour le thème du graphique en mode dark ou clair
         function updateChartTheme(chart, isDarkMode) {
             if (!chart) return;
 
@@ -386,7 +384,7 @@ if (file_exists($lastCheckFilePath)) {
             const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
             const backgroundColor = isDarkMode ? 'rgba(52, 152, 219, 0.2)' : 'rgba(52, 152, 219, 0.1)';
 
-            // Mettre à jour les couleurs du graphique
+            // Mettre à jour les couleurs du graphique en mode dark ou clair
             chart.data.datasets.forEach(dataset => {
                 if (isDarkMode) {
                     dataset.backgroundColor = viewMode === 'regions' ? 'rgba(142, 68, 173, 0.2)' : backgroundColor;
@@ -406,7 +404,7 @@ if (file_exists($lastCheckFilePath)) {
             chart.update();
         }
 
-        // Export des données en CSV
+        // Fonction export des données en CSV
         function exportDataAsCSV() {
             if (!selectedArea) {
                 alert('Veuillez d\'abord sélectionner une zone sur la carte.');
@@ -522,12 +520,12 @@ if (file_exists($lastCheckFilePath)) {
                 attributionControl: false
             }).setView([46.603354, 1.888334], 6);
 
-            // Ajouter les contrôles de zoom dans une meilleure position
+            //  Contrôles de zoom dans une meilleure position
             L.control.zoom({
                 position: 'bottomright'
             }).addTo(map);
 
-            // Ajouter le fond de carte avec un style plus moderne
+            // Le fond de carte avec un style plus moderne
             L.tileLayer(tileStyle, {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
                 subdomains: 'abcd',
@@ -537,7 +535,7 @@ if (file_exists($lastCheckFilePath)) {
             // Charger les données géographiques
             loadGeoJSON();
 
-            // S'assurer que la carte s'adapte correctement lors du redimensionnement
+            // Paramètre pour que la carte s'adapte correctement lors du redimensionnement
             window.addEventListener('resize', function() {
                 map.invalidateSize();
                 adjustMapHeight();
@@ -546,7 +544,7 @@ if (file_exists($lastCheckFilePath)) {
             // Appeler une fois au chargement
             adjustMapHeight();
 
-            // Vérifier si un highlight est demandé dans l'URL
+            // on vérifie si un highlight est demandé dans l'URL
             const urlParams = new URLSearchParams(window.location.search);
             const highlightArea = urlParams.get('highlight');
 
@@ -640,7 +638,7 @@ if (file_exists($lastCheckFilePath)) {
                         tauxChomage = area.taux['t' + selectedTrimestre];
                     }
 
-                    // Déterminer la couleur en fonction du taux de chômage
+                    // Déterminer la couleur en fonction du taux de chômage (code couleur)
                     let fillColor = '#CCCCCC'; // Gris par défaut si pas de données
                     if (tauxChomage) {
                         if (tauxChomage < 6) fillColor = '#a1d99b';
@@ -870,7 +868,7 @@ if (file_exists($lastCheckFilePath)) {
                 evolutionChart.destroy();
             }
 
-            // Définir différentes couleurs pour les régions et départements
+            // Définition de différentes couleurs pour les régions et départements
             const borderColor = viewMode === 'regions' ? '#8e44ad' : '#3498db';
             const backgroundColor = viewMode === 'regions' ? 'rgba(142, 68, 173, 0.1)' : 'rgba(52, 152, 219, 0.1)';
 

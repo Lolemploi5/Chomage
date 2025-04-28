@@ -38,8 +38,8 @@ class Departement(BaseModel):
     trimestre_3: Optional[float] = None
 
 class Region(BaseModel):
-    code_region: str  # Corrigé : code_region au lieu de code_departement
-    nom_region: Optional[str] = None  # Corrigé : nom_region au lieu de nom_departement
+    code_region: str
+    nom_region: Optional[str] = None
     trimestre_1: Optional[float] = None
     trimestre_2: Optional[float] = None
     trimestre_3: Optional[float] = None

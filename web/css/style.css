@@ -6,10 +6,10 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto', sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f8f9fa;
+    color: var(--text-color);
+    background-color: var(--light-bg);
 }
 
 /* En-tête */
@@ -35,13 +35,13 @@ select {
 }
 /* Button pour switch page */
 .page-toggle {
-    display: inline-flex; /* Empêche d’occuper toute la largeur */
+    display: inline-flex; 
     background-color: var(--light-bg);
     border-radius: var(--border-radius);
     overflow: hidden;
-    margin: 0rem auto; /* ✅ Centre horizontalement */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Optionnel pour un petit relief */
-    justify-content: center; /* ✅ Assure que les boutons sont bien centrés à l’intérieur */
+    margin: 0rem auto;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    justify-content: center;
 }
 
 .page-toggle button {
@@ -65,15 +65,21 @@ select {
     background-color: rgba(52, 152, 219, 0.1);
     color: var(--primary-color);
 }
+.page-toggle button.active:hover {
+    background-color: #3286be;
+    color: white;
+    border: 2px solid #3286be;
+
+}
 
 
 /* Conteneur principal */
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 1400px;
-    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
     padding: 0 1rem;
 }
 
@@ -91,19 +97,21 @@ select {
 
 /* Légende */
 .legend {
-    background-color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: absolute;
     bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+    right: 50px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    z-index: 2;
+    max-width: 200px;
 }
 
 .legend h3 {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
+    text-align: center;
 }
 
 .legend-item {
@@ -114,8 +122,8 @@ select {
 }
 
 .color-box {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     margin-right: 8px;
     border-radius: 3px;
 }
@@ -128,21 +136,22 @@ select {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    height: auto;
-    min-height: 70vh;
-    max-height: none;
-    overflow-y: visible;
+    height: 70vh;
+    min-height: 500px;
+    overflow-y: auto;
 }
 
 .info-panel h2 {
     margin-bottom: 1rem;
-    color: #2c3e50;
-    border-bottom: 2px solid #eee;
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--primary-color);
     padding-bottom: 0.5rem;
 }
 
 #info-content {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    overflow-y: visible;
+    flex: 0 0 auto;
 }
 
 #info-content table {
@@ -163,17 +172,22 @@ select {
 
 /* Graphique */
 .chart-container {
-    height: 300px;
-    margin-top: 2rem;
+    flex: 1;
+    position: relative;
+    min-height: 300px;
+    height: auto;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 
 /* Pied de page */
 footer {
-    background-color: #2c3e50;
-    color: white;
+    background-color: var(--dark-bg);
+    color: var(--light-text);
     text-align: center;
     padding: 1rem;
     margin-top: 2rem;
+    margin-bottom: -17px;
 }
 
 /* Responsive */
@@ -201,19 +215,6 @@ footer {
     --border-radius: 8px;
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Roboto', sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--light-bg);
 }
 
 header {
@@ -270,14 +271,6 @@ main {
     padding: 2rem;
 }
 
-.container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
 @media (min-width: 992px) {
     .container {
         grid-template-columns: 1fr 1fr;
@@ -300,63 +293,6 @@ main {
     height: 100%;
     z-index: 1;
     flex: 1;
-}
-
-.legend {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    z-index: 2;
-    max-width: 200px;
-}
-
-.legend h3 {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.3rem;
-    font-size: 0.8rem;
-}
-
-.color-box {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    border-radius: 3px;
-}
-
-.info-panel {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    height: 70vh;
-    min-height: 500px;
-    overflow-y: auto;
-}
-
-.info-panel h2 {
-    margin-bottom: 1rem;
-    color: var(--secondary-color);
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 0.5rem;
-}
-
-#info-content {
-    margin-bottom: 1.5rem;
-    overflow-y: visible;
-    flex: 0 0 auto;
 }
 
 #info-content h3 {
@@ -385,15 +321,6 @@ main {
     background-color: var(--light-bg);
 }
 
-.chart-container {
-    flex: 1;
-    position: relative;
-    min-height: 300px;
-    height: auto;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-}
-
 .no-data {
     display: flex;
     justify-content: center;
@@ -401,14 +328,6 @@ main {
     height: 100%;
     color: #999;
     font-style: italic;
-}
-
-footer {
-    background-color: var(--dark-bg);
-    color: var(--light-text);
-    text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
 }
 
 .view-toggle {

@@ -183,15 +183,19 @@ if ($isAjax) {
             </tbody>
         </table>
     </main>
+
+    <footer>
+        <p>&copy; <?php echo date("Y"); ?> - Observatoire du chômage en France | <i class="fas fa-chart-line"></i> Données actualisées</p>
+    </footer>
 </body>
 <script>
     // Fonction pour normaliser les chaînes de caractères
     function normalizeJS(str) {
         return str
-            .toLowerCase() // Convertir en minuscules
-            .normalize("NFD") // Décomposer les caractères accentués
-            .replace(/[\u0300-\u036f]/g, "") // Supprimer les diacritiques
-            .replace(/[^a-z0-9 ]/g, '') // Supprimer les caractères non alphanumériques
+            .toLowerCase()
+            .normalize("NFD") // enlève les caractères accentués
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, '') // enlève les caractères spéciaux
             .trim(); // Supprimer les espaces inutiles
     }
 
