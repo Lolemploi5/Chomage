@@ -189,7 +189,7 @@ if (file_exists($lastCheckFilePath)) {
     </main>
 
     <footer>
-        <p>&copy; <?php echo date("Y"); ?> - Observatoire du chômage en France | <i class="fas fa-chart-line"></i> Données actualisées</p>
+        <p>Taux de chômage en France | <i class="fas fa-chart-line"></i> Données actualisées</p>
     </footer>
 
     <script>
