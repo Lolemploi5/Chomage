@@ -14,7 +14,6 @@ function captureAndShare() {
         actionButtons.style.display = 'none';
     }
 
-    // Forcer l'info panel à s'étendre pour capturer tout son contenu
     const originalHeight = infoPanel.style.height;
     infoPanel.style.height = 'auto';
 

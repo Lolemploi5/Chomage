@@ -19,7 +19,7 @@ INSEE_URL = "https://www.insee.fr/fr/statistiques/2012804" # URL de la page d'in
 EXCEL_URL = "https://www.insee.fr/fr/statistiques/fichier/2012804/TCRD_025.zip" # URL directe vers le fichier ZIP
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 OUTPUT_ZIP_PATH = os.path.join(DATA_DIR, "TCRD_025.zip")
-EXCEL_PATH = os.path.join(DATA_DIR, "sl_etc_2024T4.xls") # Nom du fichier extrait (peut changer)
+EXCEL_PATH = os.path.join(DATA_DIR, "sl_etc_2024T4.xls") 
 LAST_CHECK_FILE = os.path.join(DATA_DIR, "last_check_time.txt")
 LAST_PUB_DATE_FILE = os.path.join(DATA_DIR, "last_publication_date.txt")
 
@@ -52,7 +52,6 @@ def fetch_publication_date(url):
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Recherche de la date de publication avec différentes méthodes
         # Méthode 1 : Chercher dans les méta-données
         meta_date = soup.select_one('meta[property="og:updated_time"]')
         if meta_date and meta_date.get('content'):
@@ -63,17 +62,15 @@ def fetch_publication_date(url):
         if pub_date_elem:
             return pub_date_elem.text.strip()
             
-        # Méthode 3 : Chercher un texte contenant "Paru le" ou "Publié le"
+        # Chercher un texte contenant "Paru le" ou "Publié le"
         for p in soup.find_all(['p', 'div', 'span']):
             text = p.text.strip()
             if "Paru le" in text or "Publié le" in text:
-                # Extraire la date au format JJ/MM/AAAA
                 import re
                 date_match = re.search(r'(\d{2}/\d{2}/\d{4})', text)
                 if date_match:
                     return date_match.group(1)
         
-        # Si aucune méthode ne fonctionne, enregistrer le HTML pour l'analyser
         debug_html_path = os.path.join(DATA_DIR, "insee_debug.html")
         os.makedirs(os.path.dirname(debug_html_path), exist_ok=True)
         with open(debug_html_path, "w", encoding="utf-8") as f:
@@ -99,7 +96,6 @@ def download_new_file(url, output_path):
         # Créer le répertoire de destination s'il n'existe pas
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
-        # Écrire le contenu dans un fichier
         with open(output_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
