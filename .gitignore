@@ -2,3 +2,5 @@
 .DS_Store
 .vscode/
 .venv/
+
+web/data/logs/
